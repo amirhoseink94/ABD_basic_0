@@ -1,0 +1,29 @@
+b.out:
+	g++ -c test.cpp Particle.cpp -std=c++11 -Wall
+	g++ -o res.out *.o -lGL -lGLU -lglut -lGLEW -lglfw -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lXinerama -lXcursor
+	rm -f *.o 
+	
+	
+# Makefile for Writing Make Files Example
+ 
+# *****************************************************
+# Variables to control Makefile operation
+ 
+CC = g++
+CFLAGS = -Wall -g
+OPGLFLAGS = -lGL -lGLU -lglut -lGLEW -lglfw -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lXinerama -lXcursor
+ 
+# ****************************************************
+# Targets needed to bring the executable up to date
+ 
+res: main.o Point.o Square.o
+    $(CC) $(CFLAGS) -o main main.o Point.o Square.o
+ 
+# The main.o target can be written more simply
+ 
+main.o: main.cpp Point.h Square.h
+    $(CC) $(CFLAGS) -c main.cpp
+ 
+Point.o: Point.h
+ 
+Square.o: Square.h Point.h
