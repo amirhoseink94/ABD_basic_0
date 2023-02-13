@@ -1,44 +1,5 @@
-#ifndef VECTOR_H
-#define VECTOR_H
-
-#include <iostream>
+#include "../include/Vector.h"
 #include <cmath>
-using namespace std;
-
-template<typename T>
-class Vector
-{
-	public:
-    T x=0, y=0, z=0;
-    Vector();
-    Vector(T x, T y, T z);
-    // Overload the * operator
-    Vector<T> operator+ (const Vector<T>& obj);
-    Vector<T> operator- (const Vector<T>& obj);
-    Vector<T>& operator= (const Vector<T>& obj);
-    T& operator[](int);
-    
-    float length();
-    Vector<T> num_multi(float);
-    
-    template <typename U> 
-    friend ostream& operator<<(ostream& os, const Vector<U>& obj);
-    template <typename U> 
-    friend bool operator== (const Vector<U>& v1, const Vector<U>& v2);
-    template <typename U> 
-    friend bool operator!= (const Vector<U>& v1, const Vector<U>& v2);
-    template <typename U> 
-    friend bool operator<= (const Vector<U>& v1, const Vector<U>& v2);
-    template <typename U> 
-    friend bool operator>= (const Vector<U>& v1, const Vector<U>& v2);
-    template <typename U> 
-    friend bool operator< (const Vector<U>& v1, const Vector<U>& v2);
-    template <typename U> 
-    friend bool operator> (const Vector<U>& v1, const Vector<U>& v2);
-    
-};
-
-typedef Vector<float> Vec3D;
 
 template<typename T>
 Vector<T>::Vector()
@@ -152,23 +113,4 @@ bool operator> (const Vector<T>& v1, const Vector<T>& v2)
 		return false;
 }
 
-template<typename T>
-T& Vector<T>::operator[](int index)
-{
-	switch(index)
-	{
-		case 0:
-			return x;
-			break;
-		case 1:
-			return y;
-			break;
-		case 2:
-			return z;
-			break;
-		default:
-			exit(0);
-	}
-}
 
-#endif

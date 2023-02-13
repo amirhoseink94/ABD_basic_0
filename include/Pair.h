@@ -17,25 +17,25 @@ class Pair
     Pair<T> operator- (const Pair<T>& obj);
     Pair<T>& operator= (const Pair<T>& obj);
     T& operator[](int);
-    
+		//const T operator[](int);
     float length();
     Pair<T> num_multi(float);
-    
-    template <typename U> 
+
+    template <typename U>
     friend ostream& operator<<(ostream& os, const Pair<U>& obj);
-    template <typename U> 
+    template <typename U>
     friend bool operator== (const Pair<U>& v1, const Pair<U>& v2);
-    template <typename U> 
+    template <typename U>
     friend bool operator!= (const Pair<U>& v1, const Pair<U>& v2);
-    template <typename U> 
+    template <typename U>
     friend bool operator<= (const Pair<U>& v1, const Pair<U>& v2);
-    template <typename U> 
+    template <typename U>
     friend bool operator>= (const Pair<U>& v1, const Pair<U>& v2);
-    template <typename U> 
+    template <typename U>
     friend bool operator< (const Pair<U>& v1, const Pair<U>& v2);
-    template <typename U> 
+    template <typename U>
     friend bool operator> (const Pair<U>& v1, const Pair<U>& v2);
-    
+
 };
 
 
@@ -43,7 +43,7 @@ class Pair
 template<typename T>
 Pair<T>::Pair()
 {
-	
+
 }
 template<typename T>
 Pair<T>::Pair(T x, T y)
@@ -52,7 +52,7 @@ Pair<T>::Pair(T x, T y)
 	this->y = y;
 }
 template<typename T>
-Pair<T> Pair<T>::operator+(const Pair<T>& obj) 
+Pair<T> Pair<T>::operator+(const Pair<T>& obj)
 {
     Pair<T> temp;
     temp.x = x + obj.x;
@@ -60,7 +60,7 @@ Pair<T> Pair<T>::operator+(const Pair<T>& obj)
     return temp;
 }
 template<typename T>
-Pair<T> Pair<T>::operator-(const Pair<T>& obj) 
+Pair<T> Pair<T>::operator-(const Pair<T>& obj)
 {
     Pair<T> temp;
     temp.x = x - obj.x;
@@ -86,7 +86,7 @@ Pair<T> Pair<T>::num_multi(float a)
 	Pair<T> temp;
     temp.x = a * x;
     temp.y = a * y;
-   
+
     return temp;
 }
 template<typename T>
@@ -131,10 +131,11 @@ bool operator>= (const Pair<T>& v1, const Pair<T>& v2)
 template<typename T>
 bool operator< (const Pair<T>& v1, const Pair<T>& v2)
 {
-	if(v1.x < v2.x && v1.y < v2.y)
+	if(v1.x < v2.x)
 		return true;
-	else
-		return false;
+	if(v1.x == v2.x && v1.y < v2.y)
+		return true;
+	return false;
 }
 template<typename T>
 bool operator> (const Pair<T>& v1, const Pair<T>& v2)
@@ -160,5 +161,20 @@ T& Pair<T>::operator[](int index)
 			exit(0);
 	}
 }
+/*template<typename T>
+const T Pair<T>::operator[](int index)
+{
+	switch(index)
+	{
+		case 0:
+			return x;
+			break;
+		case 1:
+			return y;
+			break;
+		default:
+			exit(0);
+	}
+}*/
 
 #endif

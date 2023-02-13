@@ -1,6 +1,6 @@
-#include "Particle.h"
-#include "Vector.h"
-#include "Pair.h"
+#include "../include/Particle.h"
+#include "../include/Vector.h"
+#include "../include/Pair.h"
 
 //typedef Vector<float> Vec3D;
 
