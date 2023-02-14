@@ -14,7 +14,7 @@
 #include "include/Pair.h"
 #include "include/Shape.h"
 #include "include/Utilities.h"
-//#include "utilities.cpp"
+
 
 // -----------------------------------------------------------------------------------
 typedef Pair<Vec3D> Segment;
@@ -86,13 +86,23 @@ int main( int argc, char** argv)
 	srand(rand());
 	vector<Particle> particles;
 
-	Particle p1(Vec3D(50, 50, 50), Vec3D(0, 0, 0), 10, Vec3D(0, 0, 0) );
+	for(int i=0 ;i <500; i++)
+	{
+		Particle p(Vec3D(rand()%200, rand()%200, rand()%200), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
+		particles.push_back(p);
+	}
+
+	/*Particle p1(Vec3D(50, 50, 50), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
 	Particle p2(Vec3D(0, 50, 50), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
+	Particle p3(Vec3D(0, 20, 10), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
+	Particle p4(Vec3D(0, 10, 10), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
 
 	particles.push_back(p1);
 	particles.push_back(p2);
+	particles.push_back(p3);
+	particles.push_back(p4);
 	cout<<p1.pos<<endl;
-	cout<<p2.pos<<endl;
+	cout<<p2.pos<<endl;*/
 	Shape a;
 
 	Vec3D A(10,10,10);
@@ -159,13 +169,14 @@ int main( int argc, char** argv)
 		draw_space();
 		draw_cube();
 		a.draw_shape();
-		render_particles(particles);
 		//cout<<"z is pressed"<<endl;
-		/*if(z_key_flag)
+		if(z_key_flag)
 		{
-		}*/
-		//render_particles(particles);
+			cout<<"nothing will happen :D"<<endl;
+		}
+		render_particles(particles);
 		draw_particles(particles);
+		//render_particles(particles);
 		glfwSwapBuffers(window);
 	}
 
@@ -235,41 +246,42 @@ void render_particles(vector<Particle>& particles)
 	for(long unsigned int i=0; i<N; i++)
 	{
 		Vec3D F_tot(0, 0, 0);
+		particles[i].F.x = 0;
+		particles[i].F.y = 0;
+		particles[i].F.y = 0;
 		for(long unsigned int j=0; j<N; j++)
 		{
 			if( i!=j )
 			{
 				Vec3D F = particles[j].pos - particles[i].pos;
-				cout<<"#"<<i<<F<<endl;
+				//cout<<"The force direction is: "<<i<<" "<<F<<endl;
 				float len = F.length();
 				if(len < tresh_hold)
 				{
-					cout<<"warning! we are in the dark age!"<<endl;
+					//cout<<"warning! we are in the dark age!"<<endl;
 					continue;
 				}
 				F = F.num_multi(1./len);
-				cout<<"##"<<i<<len<<" "<<F<<endl;
-				F = F.num_multi(G * particles[j].m / pow(len, 2));
+				//cout<<"##"<<i<<len<<" "<<F<<endl;
+				F = F.num_multi(G * particles[i].m * particles[j].m / pow(len, 2));
 				F_tot = F_tot + F;
 			}
 		}
-		cout<<particles[i].F<<"|"<<F_tot<<endl;
-		int x;
-		//cin>>x;
+		//cout<<particles[i].F<<"|"<<F_tot<<endl;
 		particles[i].F = F_tot;
 
 	}
 	/*particles[1].pos.x = 0;
 	particles[1].pos.y = 50;
 	particles[1].pos.y = 50;*/
-	for(long unsigned int i=0; i<particles.size(); i++)
+	for(long unsigned int i=0; i<N; i++)
 	{
 		//Vec3D a =
 	//	particles[i].pos = particles[i].pos + dl_t * particles[i].v;
-		particles[i].v = particles[i].v + particles[i].F.num_multi(dl_t);
+		particles[i].v = particles[i].v + particles[i].F.num_multi((1./particles[i].m) * dl_t);
 		particles[i].pos = particles[i].pos + particles[i].v.num_multi(dl_t);
-		cout<<"pos: "<<i<<";"<<particles[i].pos<<endl;
-		cout<<"vel: "<<i<<";"<<particles[i].v<<endl;
+		//cout<<"pos: "<<i<<";"<<particles[i].pos<<endl;
+		//cout<<"vel: "<<i<<";"<<particles[i].v<<endl;
 	}
 
 }
@@ -300,10 +312,7 @@ void draw_particles(vector<Particle> p)
 	{
 		glPointSize(2);
 		glBegin(GL_POINTS);
-			if(i%2==0)
-				glColor3ub(255, 255, 0);
-			else
-				glColor3ub(0, 255, 255);
+			glColor3ub((i * 10)%255, 255, 255);
 			glVertex3f(p[i].pos.x, p[i].pos.y, p[i].pos.z);
 		glEnd();
 	}

@@ -77,7 +77,7 @@ Vector<T> Vector<T>::operator-(const Vector<T>& obj)
     Vector<T> temp;
     temp.x = x - obj.x;
     temp.y = y - obj.y;
-    temp.z = y - obj.z;
+    temp.z = z - obj.z;
     return temp;
 }
 template<typename T>

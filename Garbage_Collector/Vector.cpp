@@ -16,30 +16,30 @@ Vector<T>::Vector(T x, T y, T z)
 	this->z = z;
 }
 template<typename T>
-Vector<T> Vector<T>::operator+(const Vector<T>& obj) 
+Vector<T> Vector<T>::operator+(const Vector<T>& obj)
 {
     Vector<T> temp;
-    temp.x = x + obj.x;
-    temp.y = y + obj.y;
-    temp.z = y + obj.z;
+    temp.x = this->x + obj.x;
+    temp.y = this->y + obj.y;
+    temp.z = this->z + obj.z;
     return temp;
 }
 template<typename T>
-Vector<T> Vector<T>::operator-(const Vector<T>& obj) 
+Vector<T> Vector<T>::operator-(const Vector<T>& obj)
 {
     Vector<T> temp;
-    temp.x = x - obj.x;
-    temp.y = y - obj.y;
-    temp.z = y - obj.z;
+    temp.x = this->x - obj.x;
+    temp.y = this->y - obj.y;
+    temp.z = this->z - obj.z;
     return temp;
 }
 template<typename T>
 Vector<T>& Vector<T>::operator= (const Vector<T>& obj)
 {
-	x = obj.x;
-	y = obj.y;
-	z = obj.z;
-    return *this;
+	this->x = obj.x;
+	this->y = obj.y;
+	this->z = obj.z;
+  return *this;
 }
 template<typename T>
 ostream& operator<<(ostream& os, const Vector<T>& obj)
@@ -51,11 +51,11 @@ template<typename T>
 Vector<T> Vector<T>::num_multi(float a)
 {
 	Vector<T> temp;
-    temp.x = a * x;
-    temp.y = a * y;
-    temp.z = a * z;
-   
-    return temp;
+  temp.x = a * x;
+  temp.y = a * y;
+  temp.z = a * z;
+
+  return temp;
 }
 template<typename T>
 float Vector<T>::length()
@@ -112,5 +112,3 @@ bool operator> (const Vector<T>& v1, const Vector<T>& v2)
 	else
 		return false;
 }
-
-
