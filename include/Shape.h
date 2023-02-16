@@ -9,8 +9,8 @@
 #include "Vector.h"
 #include "Pair.h"
 
-typedef Pair<Vec3D> Segment;
-typedef Vector<Vec3D> Face;
+//typedef Pair<Vec3D> Segment;
+//typedef Vector<Vec3D> Face;
 
 using namespace std;
 
@@ -23,6 +23,8 @@ class Shape
 
 	void draw_shape();
 	void print();
+	Shape& operator= (const Shape& obj);
+	//Shape operator+(const Shape& obj);
 };
 
 #endif

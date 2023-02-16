@@ -2,6 +2,8 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <GL/glut.h>
+// armadillo library
+#include <armadillo>
 // system and c++ libraries
 #include <stdio.h>
 #include <iostream>
@@ -10,14 +12,18 @@
 #include <vector>
 // my libraries
 #include "include/Particle.h"
-#include "include/Vector.h"
-#include "include/Pair.h"
-#include "include/Shape.h"
-#include "include/Utilities.h"
-
+#include "include/Segment.h"
+#include "include/Face.h"
+//#include "include/Vector.h"
+//#include "include/Pair.h"
+//#include "include/Shape.h"
+//#include "include/Utilities.h"
+//namespaces
+using namespace std;
+using namespace arma;
 
 // -----------------------------------------------------------------------------------
-typedef Pair<Vec3D> Segment;
+typedef Mat<float> Vec3f;
 // --------------------------------- global variables --------------------------------
 
 int width = 500, height = 500;   // Size of the drawing area, to be set in reshape().
@@ -66,7 +72,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void key_handler();
 
 
-using namespace std;
+
 // rednders and drawing
 void render();
 void render_particles(vector<Particle>&);
@@ -75,7 +81,8 @@ void draw_space();
 void draw_particles(vector<Particle>);
 
 // tool functions
-float distance(Vec3D, Vec3D);
+float distance(Vec3f, Vec3f);
+float vec_length(const Vec3f&);
 
 //Shape make_mesh(Shape start, int itr, int n);
 
@@ -86,56 +93,52 @@ int main( int argc, char** argv)
 	srand(rand());
 	vector<Particle> particles;
 
-	for(int i=0 ;i <500; i++)
+	/*for(int i=0 ;i <2; i++)
 	{
-		Particle p(Vec3D(rand()%200, rand()%200, rand()%200), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
+		Vec3f pos(3,1)
+		Particle p(Vec3(rand()%200, rand()%200, rand()%200), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
 		particles.push_back(p);
-	}
+	}*/
+	Vec3f Z(3,1,fill::zeros);
+	Vec3f pos1(3,1,fill::zeros);
+	Vec3f pos2(3,1,fill::zeros);
+	Vec3f pos3(3,1,fill::zeros);
+	pos1[0] = 50;
+	pos1[1] = 50;
+	pos1[2] = 50;
 
-	/*Particle p1(Vec3D(50, 50, 50), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
-	Particle p2(Vec3D(0, 50, 50), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
-	Particle p3(Vec3D(0, 20, 10), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
-	Particle p4(Vec3D(0, 10, 10), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
+	pos2[0] = 10;
+	pos2[1] = 10;
+	pos2[2] = 10;
+
+	pos3[0] = 20;
+	pos3[1] = 20;
+	pos3[2] = 20;
+	Particle p1(pos1, Z, 100, Z );
+	Particle p2(pos2, Z, 100, Z );
+	Particle p3(pos3, Z, 100, Z );
+	//Particle p4(Vec3D(0, 10, 10), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
 
 	particles.push_back(p1);
 	particles.push_back(p2);
 	particles.push_back(p3);
-	particles.push_back(p4);
+	//particles.push_back(p4);
 	cout<<p1.pos<<endl;
-	cout<<p2.pos<<endl;*/
-	Shape a;
-
-	Vec3D A(10,10,10);
-	Vec3D B(10,20,10);
-	Vec3D C(10,10,20);
+	//cout<<p2.pos<<endl;
+	/*Shape a;
+	Vec3D A(0,0,10);
+	Vec3D A_p(0,0,-10);
+	Vec3D B(0,10,0);
+	Vec3D C(10,0,0);
 	Segment AB(A, B);
 	Segment BC(B, C);
 	Segment CA(C, A);
-	Face ABC(A, B, C);
-	Segment s(Vec3D(50, 50, 50),Vec3D(0, 0, 0));
+	Face ABC(A, B, C);*/
+	//Segment s(Vec3D(50, 50, 50),Vec3D(0, 0, 0));
 
-	a.points.insert(A);
-	a.points.insert(B);
-	a.points.insert(C);
-
-	a.segments.insert(AB);
-	a.segments.insert(BC);
-	a.segments.insert(CA);
-
-	a.faces.insert(ABC);
-
-	set<Vec3D>::iterator set_itr = a.points.begin();
-  Vec3D AA((*set_itr).x, (*set_itr).y, (*set_itr).z);
-  set_itr++;
-  Vec3D BB((*set_itr).x, (*set_itr).y, (*set_itr).z);
-  set_itr++;
-  Vec3D CC((*set_itr).x, (*set_itr).y, (*set_itr).z);
-  cout<<"A"<<AA<<endl;
-  cout<<"B"<<BB<<endl;
-  cout<<"C"<<CC<<endl;
-	cout<<a.points.size()<<(A==B)<<endl;
-
-	Util::make_mesh(a, 1);
+	//Segment A_pB(A_p, B);
+	//Segment CA_p(C, A_p);
+	//Face A_pBC(A_p, B, C);
 
 
 
@@ -168,7 +171,9 @@ int main( int argc, char** argv)
 		render();
 		draw_space();
 		draw_cube();
-		a.draw_shape();
+		//a.draw_shape();
+		//b.draw_shape();
+		//cc.draw_shape();
 		//cout<<"z is pressed"<<endl;
 		if(z_key_flag)
 		{
@@ -185,7 +190,7 @@ int main( int argc, char** argv)
 	return 0;
 }
 // ---
-Shape make_mesh(Shape start, int itr, int n)
+/*Shape make_mesh(Shape start, int itr, int n)
 {
   if(itr == n)
   {
@@ -203,7 +208,7 @@ Shape make_mesh(Shape start, int itr, int n)
   cout<<"B"<<B<<endl;
   cout<<"C"<<C<<endl;
 */
-}
+//}
 
 
 // --------------------------------- rendering --------------------------------
@@ -245,25 +250,23 @@ void render_particles(vector<Particle>& particles)
 	long unsigned int N = particles.size();
 	for(long unsigned int i=0; i<N; i++)
 	{
-		Vec3D F_tot(0, 0, 0);
-		particles[i].F.x = 0;
-		particles[i].F.y = 0;
-		particles[i].F.y = 0;
+		Vec3f F_tot(3, 1, fill::zeros);
+
 		for(long unsigned int j=0; j<N; j++)
 		{
 			if( i!=j )
 			{
-				Vec3D F = particles[j].pos - particles[i].pos;
+				Vec3f F = particles[j].pos - particles[i].pos;
 				//cout<<"The force direction is: "<<i<<" "<<F<<endl;
-				float len = F.length();
+				float len = vec_length(F);
 				if(len < tresh_hold)
 				{
 					//cout<<"warning! we are in the dark age!"<<endl;
 					continue;
 				}
-				F = F.num_multi(1./len);
+				F = F*(1./len);
 				//cout<<"##"<<i<<len<<" "<<F<<endl;
-				F = F.num_multi(G * particles[i].m * particles[j].m / pow(len, 2));
+				F = F*(G * particles[i].m * particles[j].m / pow(len, 2));
 				F_tot = F_tot + F;
 			}
 		}
@@ -278,8 +281,8 @@ void render_particles(vector<Particle>& particles)
 	{
 		//Vec3D a =
 	//	particles[i].pos = particles[i].pos + dl_t * particles[i].v;
-		particles[i].v = particles[i].v + particles[i].F.num_multi((1./particles[i].m) * dl_t);
-		particles[i].pos = particles[i].pos + particles[i].v.num_multi(dl_t);
+		particles[i].v = particles[i].v + particles[i].F * ((1./particles[i].m) * dl_t);
+		particles[i].pos = particles[i].pos + particles[i].v * (dl_t);
 		//cout<<"pos: "<<i<<";"<<particles[i].pos<<endl;
 		//cout<<"vel: "<<i<<";"<<particles[i].v<<endl;
 	}
@@ -313,7 +316,7 @@ void draw_particles(vector<Particle> p)
 		glPointSize(2);
 		glBegin(GL_POINTS);
 			glColor3ub((i * 10)%255, 255, 255);
-			glVertex3f(p[i].pos.x, p[i].pos.y, p[i].pos.z);
+			glVertex3f(p[i].pos[0], p[i].pos[1], p[i].pos[2]);
 		glEnd();
 	}
 }
@@ -480,4 +483,10 @@ void key_handler()
 
 	if(RIGHT_key_flag)
 		y_rotate_angle--;
+}
+
+float vec_length(const Vec3f& a)
+{
+	float l = pow(a[0],2) + pow(a[1],2) + pow(a[2],2);
+	return sqrt(l);
 }

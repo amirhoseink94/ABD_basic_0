@@ -86,7 +86,7 @@ Vector<T>& Vector<T>::operator= (const Vector<T>& obj)
 	x = obj.x;
 	y = obj.y;
 	z = obj.z;
-    return *this;
+  return *this;
 }
 template<typename T>
 ostream& operator<<(ostream& os, const Vector<T>& obj)

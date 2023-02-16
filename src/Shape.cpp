@@ -34,3 +34,25 @@ void Shape::print()
     cout<<(*itr);
   cout<<"}"<<endl;
 }
+
+Shape& Shape::operator= (const Shape& obj)
+{
+  this->points = obj.points;
+	this->segments = obj.segments;
+	this->faces = obj.faces;
+  return *this;
+}
+
+/*Shape Shape::operator+(const Shape& obj)
+{
+    Shape temp;
+    temp.x = x + obj.x;
+    temp.y = y + obj.y;
+    temp.z = z + obj.z;
+    return temp;
+}
+
+Shape Shape::translate(const Vec3D t)
+{
+
+}*/

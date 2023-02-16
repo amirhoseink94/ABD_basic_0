@@ -1,18 +1,18 @@
 #ifndef UTIL_H
 #define UTIL_H
-#include "Shape.h"
+#include "Body.h"
 
 using namespace std;
 
 class Util
 {
 	public:
-	static Shape make_mesh(Shape, int);
-	static Shape merge_shapes(Shape, Shape);
+	static Body make_mesh(Body, int);
+	static Body merge_shapes(Body, Body);
 
 	private:
-	static Shape make_mesh_handler(Shape, int, int);
-	
+	static Body make_mesh_handler(Body, int, int);
+
 };
 
 #endif

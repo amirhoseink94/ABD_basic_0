@@ -1,21 +1,31 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
-#include "Vector.h"
+#include <vector>
+#include <armadillo>
+#include <iostream>
+
+//#include "Face.h"
+//#include "Segment.h"
 
 using namespace std;
-typedef Vector<float> Vec3D;
+using namespace arma;
+typedef Mat<float> Vec3f;
 
 class Particle
-{	
-	typedef Vector<float> Vec3D;
+{
 	public:
-	Vec3D pos;
-	Vec3D v;
+	Vec3f pos;
+	Vec3f v;
 	float m;
-	Vec3D F;
-	
-	Particle(Vec3D, Vec3D, float, Vec3D);
+	Vec3f F;
+
+//	vector<Segment*> nei_segments;
+//	vector<Face*> nei_faces;
+
+	Particle(Vec3f, Vec3f, float, Vec3f); //pos - vel - mess - force
+
+	friend ostream& operator<<(ostream& os, const Particle& obj);
 };
 
 #endif
