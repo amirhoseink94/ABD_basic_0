@@ -10,23 +10,20 @@
 #include <cmath>
 #include <time.h>
 #include <vector>
+
 // my libraries
-#include "include/Particle.h"
-#include "include/Segment.h"
-#include "include/Face.h"
+#include "Pair.h"
+#include "Vector.h"
+#include "Shape.h"
 
-#include "include/Body.h"
-//#include "include/Vector.h"
-//#include "include/Pair.h"
-//#include "include/Shape.h"
-#include "include/Utilities.h"
-//namespaces
 using namespace std;
-using namespace arma;
+typedef Pair<Vec3f> Segment;
+typedef Vector<Vec3f> Face;
 
-// -----------------------------------------------------------------------------------
 
-// --------------------------------- global variables --------------------------------
+
+
+// global variables
 
 int width = 500, height = 500;   // Size of the drawing area, to be set in reshape().
 int frameNumber = 0;     // For use in animation.
@@ -77,107 +74,64 @@ void key_handler();
 
 // rednders and drawing
 void render();
-void render_particles(vector<Particle>&);
+//void render_particles(vector<Particle>&);
 void draw_cube();
 void draw_space();
-void draw_particles(vector<Particle>);
 
-// tool functions
-double distance(vec, vec);
-double vec_length(const vec&);
+// body maker
+Shape make_triangle(Vec3f, Vec3f, Vec3f);
+// mesh maker
+Shape make_mesh(Shape start, int n);
+Shape make_mesh_handler(Shape start, int itr, int n);
+Shape merge_shapes(Shape s, Shape v);
 
-//Shape make_mesh(Shape start, int itr, int n);
 
 
-int main( int argc, char** argv)
+int main()
 {
-
-	vector<Particle> particles;
-	//cout.precision(5);
-	//cout<<fixed;
-
-	/*for(int i=0 ;i <2; i++)
-	{
-		vec pos(3,1)
-		Particle p(Vec3(rand()%200, rand()%200, rand()%200), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
-		particles.push_back(p);
-	}*/
-	vec Z(3,1,fill::zeros);
-	vec pos1(3,fill::zeros);
-	vec pos2(3,fill::zeros);
-	vec pos3(3,fill::zeros);
-	vec pos4(3,fill::zeros);
-	pos1[0] = 10;
-	pos1[1] = 100;
-	pos1[2] = 1;
-
-	pos2[0] = 1;
-	pos2[1] = 110;
-	pos2[2] = 1;
-
-	pos3[0] = 1;
-	pos3[1] = 100;
-	pos3[2] = 10;
-
-	pos4[0] = 10;
-	pos4[1] = 110;
-	pos4[2] = 10;
-	Particle A(pos1, Z, 1, Z );
-	Particle B(pos2, Z, 2, Z );
-	Particle C(pos3, Z, 3, Z );
-	Particle D(pos4, Z, 4, Z );
-	//Particle p4(Vec3D(0, 10, 10), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
-	Body b;
-	b.load_from_file();
-	//b.reshape();
-	/*b.points.push_back(&A);
-	b.points.push_back(&B);
-	b.points.push_back(&C);
-	b.points.push_back(&D);
-	Segment AB(&A, &B);
-	Segment BC(&B, &C);
-	Segment CA(&C, &A);
-	Segment AD(&A, &D);
-	Segment BD(&B, &D);
-	Segment CD(&C, &D);
-	b.segments.push_back(AB);
-	b.segments.push_back(BC);
-	b.segments.push_back(CA);
-	b.segments.push_back(AD);
-	b.segments.push_back(BD);
-	b.segments.push_back(CD);*/
-	//Face ABC(&A, &B, &C);
-	//Face ABD(&A, &B, &D);
-	//Face BCD(&B, &C, &D);
-	//Face CAD(&C, &A, &D);
-
-	//b.faces.push_back(ABC);
-	//b.faces.push_back(ABD);
-	//b.faces.push_back(BCD);
-	//b.faces.push_back(CAD);
-
-	b.init();
-
-	//b.update_q_mad();
-	//cout<<b.q<<endl;
-	//b.calculate_energy(b.q);
-	//b.E_der_der(b.q);
-	//int x;
-	//cin>>x;
-	//b.apply_force();
-	//b.update_q_mad();
-	//b.calculate_energy(b.q);
-	//b.E_der_der(b.q);
-	//cin>>x;
-	//cout<<"q_mad is updated!"<<b.q_mad<<endl;
-	//b.update_q_mad();
-	//cout<<"q_mad is updated!"<<b.q_mad<<endl;
-
-	//b.calculate_next_q();
-
 	if ( !glfwInit() )
 		return -1;
 	cout << "(the glfw just initilized!)" << endl;
+
+	Vec3f A(100, 0 , 0);
+	Vec3f B(0, 100 , 0);
+	Vec3f C(0, 0 , 100);
+	Vec3f D(-100, 0, 0);
+	Vec3f E(0, -100 , 0);
+	Vec3f F(0, 0 , -100);
+
+	Shape ABC = make_triangle(A, B, C);
+	Shape BCD = make_triangle(B, C, D);
+	Shape ABF = make_triangle(A, B, F);
+	Shape BDF = make_triangle(B, D, F);
+
+	Shape AEC = make_triangle(A, E, C);
+	Shape ECD = make_triangle(E, C, D);
+	Shape AEF = make_triangle(A, E, F);
+	Shape EDF = make_triangle(E, D, F);
+
+
+
+
+	Shape ABC_m = make_mesh(ABC, 5);
+	Shape BCD_m = make_mesh(BCD, 5);
+	Shape ABF_m = make_mesh(ABF, 5);
+	Shape BDF_m = make_mesh(BDF, 5);
+
+	Shape AEC_m = make_mesh(AEC, 5);
+	Shape ECD_m = make_mesh(ECD, 5);
+	Shape AEF_m = make_mesh(AEF, 5);
+	Shape EDF_m = make_mesh(EDF, 5);
+
+	Shape up = merge_shapes(merge_shapes(ABC_m, BCD_m), merge_shapes(ABF_m, BDF_m));
+	Shape down = merge_shapes(merge_shapes(AEC_m, ECD_m), merge_shapes(AEF_m, EDF_m));
+
+	Shape s = merge_shapes(up, down);
+	s.write_to_file();
+
+	cout<<"we are good to go"<<endl;
+
+
 	GLFWwindow* window = glfwCreateWindow(width, height, "test", NULL, NULL);
 	if( !window )
 	{
@@ -195,43 +149,21 @@ int main( int argc, char** argv)
 	render();
 	glfwSwapBuffers(window);
 
-	//render();
-	int pp = 0;
 	while( !glfwWindowShouldClose( window) )
 	{
 		glfwPollEvents();
 		key_handler();
 		render();
 		draw_space();
-		//draw_cube();
-		b.draw_body();
-
+		s.draw_shape();
 
 		if(z_key_flag)
 		{
-			b.apply_force();
-			Mat<double> q_next = b.calculate_next_q();
 
-			//cout<<"q_next:\n"<<q_next<<"\n q_mad:\n"<<b.q_mad<<endl;
-
-			b.q_dot = (q_next - b.q)/b.Dl_t;
-			cout<<"speed:\n"<<b.q_dot<<endl;
-			//cout<<"q_mad:\n"<<b.q_mad<<"\n the next:\n"<<q_next<<endl;
-
-			b.q = q_next;
-
-			b.update_A_p();
-			//cout<<"A:\n"<<b.A<<"{}\n"<<b.p<<endl;
-			b.apply_tranformation();
-			cout<<pp<<"[]"<<endl;
-			pp++;
-			cout<<"======\n"<<endl;
 			cout<<"Z is pressed"<<endl;
-			cout<<"complete!"<<endl;
+
 		}
-		//render_particles(particles);
-		//draw_particles(particles);
-		//render_particles(particles);
+
 		glfwSwapBuffers(window);
 	}
 
@@ -239,29 +171,11 @@ int main( int argc, char** argv)
 
 	return 0;
 }
-// ---
-/*Shape make_mesh(Shape start, int itr, int n)
-{
-  if(itr == n)
-  {
-    return start;
-  }
-  cout<<"we are here!"<<endl;
-	return start;
-  set<Vec3D>::iterator set_itr = start.points.begin();
-  Vec3D A((*set_itr).x, (*set_itr).y, (*set_itr).z);
-  itr++;
-  Vec3D B((*set_itr).x, (*set_itr).y, (*set_itr).z);
-  itr++;
-  Vec3D C((*set_itr).x, (*set_itr).y, (*set_itr).z);
-  cout<<"A"<<A<<endl;
-  cout<<"B"<<B<<endl;
-  cout<<"C"<<C<<endl;
-*/
-//}
 
 
-// --------------------------------- rendering --------------------------------
+
+
+
 
 // render camera and scene
 void render()
@@ -295,7 +209,7 @@ void render()
 }
 
 // rendering objects at each time
-void render_particles(vector<Particle>& particles)
+/*void render_particles(vector<Particle>& particles)
 {
 	long unsigned int N = particles.size();
 	for(long unsigned int i=0; i<N; i++)
@@ -327,9 +241,9 @@ void render_particles(vector<Particle>& particles)
 	/*particles[1].pos.x = 0;
 	particles[1].pos.y = 50;
 	particles[1].pos.y = 50;*/
-	for(long unsigned int i=0; i<N; i++)
+	/*for(long unsigned int i=0; i<N; i++)
 	{
-		//Vec3D a =
+		//Vec3f a =
 	//	particles[i].pos = particles[i].pos + dl_t * particles[i].v;
 		particles[i].v = particles[i].v + particles[i].F * ((1./particles[i].m) * dl_t);
 		particles[i].pos = particles[i].pos + particles[i].v * (dl_t);
@@ -337,56 +251,7 @@ void render_particles(vector<Particle>& particles)
 		//cout<<"vel: "<<i<<";"<<particles[i].v<<endl;
 	}
 
-}
-
-// --------------------------------- drawing objects --------------------------------
-
-void draw_space()
-{
-    glBegin(GL_LINES);
-    // x
-    glColor3ub(255, 0, 0);
-    glVertex3f(0, 0, 0);
-    glVertex3f(500, 0, 0);
-    // y
-    glColor3ub(0, 255, 0);
-    glVertex3f(0, 0, 0);
-    glVertex3f(0, 500, 0);
-    // z
-    glColor3ub(0, 0, 255);
-    glVertex3f(0, 0, 0);
-    glVertex3f(0, 0, 500);
-    glEnd();
-}
-
-void draw_particles(vector<Particle> p)
-{
-	for(long unsigned int i=0; i<p.size(); i++)
-	{
-		glPointSize(2);
-		glBegin(GL_POINTS);
-			glColor3ub((i * 10)%255, 255, 255);
-			glVertex3f(p[i].pos[0], p[i].pos[1], p[i].pos[2]);
-		glEnd();
-	}
-}
-
-
-void draw_cube()
-{
-	double r = 3;
-	for(int i=0; i<=180; i++)
-	{
-		for(int j=0; j<360; j++)
-		{
-			glBegin(GL_POINTS);
-				glColor3ub(255, i, j);
-				glVertex3f(r * sin(i) * cos(j), r * sin(i) * sin(j), r * cos(i));
-			glEnd();
-		}
-	}
-}
-
+}*/
 // --------------------------------- Key handling --------------------------------
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -535,8 +400,164 @@ void key_handler()
 		y_rotate_angle--;
 }
 
-double vec_length(const vec& a)
+// --------------------------------- drawing objects --------------------------------
+
+void draw_space()
 {
-	double l = pow(a[0],2) + pow(a[1],2) + pow(a[2],2);
-	return sqrt(l);
+    glBegin(GL_LINES);
+    // x
+    glColor3ub(255, 0, 0);
+    glVertex3f(0, 0, 0);
+    glVertex3f(500, 0, 0);
+    // y
+    glColor3ub(0, 255, 0);
+    glVertex3f(0, 0, 0);
+    glVertex3f(0, 500, 0);
+    // z
+    glColor3ub(0, 0, 255);
+    glVertex3f(0, 0, 0);
+    glVertex3f(0, 0, 500);
+    glEnd();
+}
+// ----------------------------------------
+
+
+Shape make_triangle(Vec3f A, Vec3f B, Vec3f C)
+{
+	Segment AB(A, B);
+	Segment BC(B, C);
+	Segment CA(C, A);
+
+
+	Face ABC(A, B, C);
+
+
+
+	Shape s;
+	s.points.insert(A);
+	s.points.insert(B);
+	s.points.insert(C);
+
+
+	s.segments.insert(AB);
+	s.segments.insert(BC);
+	s.segments.insert(CA);
+
+	s.faces.insert(ABC);
+
+	return s;
+}
+// ----------------------------------------
+Shape make_mesh(Shape start, int n)
+{
+    Shape res = make_mesh_handler(start, 0, n);
+    return res;
+}
+
+Shape make_mesh_handler(Shape start, int itr, int n)
+{
+  if(itr == n)
+  {
+    return start;
+  }
+  //cout<<itr<<endl;
+  set<Vec3f>::iterator set_itr = start.points.begin();
+  Vec3f A((*set_itr).x, (*set_itr).y, (*set_itr).z);
+  set_itr++;
+  Vec3f B((*set_itr).x, (*set_itr).y, (*set_itr).z);
+  set_itr++;
+  Vec3f C((*set_itr).x, (*set_itr).y, (*set_itr).z);
+
+  Vec3f m_AB = (A + B).num_multi(0.5);
+  Vec3f m_BC = (B + C).num_multi(0.5);
+  Vec3f m_CA = (C + A).num_multi(0.5);
+  //cout<<C<<A<<C + A<<endl;
+  Segment m_AB_A(m_AB, A);
+  Segment m_AB_B(m_AB, B);
+  Segment m_BC_B(m_BC, B);
+  Segment m_BC_C(m_BC, C);
+  Segment m_CA_C(m_CA, C);
+  Segment m_CA_A(m_CA, A);
+  Segment m_AB_m_CA(m_AB, m_CA);
+  Segment m_AB_m_BC(m_AB, m_BC);
+  Segment m_BC_m_CA(m_BC, m_CA);
+
+  Face m_AB_m_CA_A(m_AB, m_CA, A);
+  Face m_AB_m_BC_m_CA(m_AB, m_CA, m_BC);
+  Face m_AB_m_BC_B(m_AB, m_BC, B);
+  Face m_BC_m_CA_C(m_BC, m_CA, C);
+
+  Shape up;
+  up.points.insert(A);
+  up.points.insert(m_AB);
+  up.points.insert(m_CA);
+
+  up.segments.insert(m_AB_A);
+  up.segments.insert(m_CA_A);
+  up.segments.insert(m_AB_m_CA);
+
+  up.faces.insert(m_AB_m_CA_A);
+  // ----------------------------
+
+  Shape left;
+  left.points.insert(B);
+  left.points.insert(m_AB);
+  left.points.insert(m_BC);
+
+  left.segments.insert(m_AB_B);
+  left.segments.insert(m_BC_B);
+  left.segments.insert(m_AB_m_CA);
+
+  left.faces.insert(m_AB_m_BC_B);
+  // ----------------------------
+
+  Shape right;
+  right.points.insert(C);
+  right.points.insert(m_BC);
+  right.points.insert(m_CA);
+
+  right.segments.insert(m_BC_C);
+  right.segments.insert(m_CA_C);
+  right.segments.insert(m_BC_m_CA);
+
+  right.faces.insert(m_BC_m_CA_C);
+  // ----------------------------
+
+  Shape middle;
+  middle.points.insert(m_AB);
+  middle.points.insert(m_BC);
+  middle.points.insert(m_CA);
+
+  middle.segments.insert(m_AB_m_CA);
+  middle.segments.insert(m_BC_m_CA);
+  middle.segments.insert(m_AB_m_BC);
+
+  middle.faces.insert(m_AB_m_BC_m_CA);
+  //----
+  Shape res_up = make_mesh_handler(up, itr+1, n);
+  Shape res_middle = make_mesh_handler(middle, itr+1, n);
+  Shape res_right = make_mesh_handler(right, itr+1, n);
+  Shape res_left = make_mesh_handler(left, itr+1, n);
+  Shape res = merge_shapes(merge_shapes(res_left, res_right), merge_shapes(res_up, res_middle));
+
+
+  return res;
+}
+
+Shape merge_shapes(Shape s, Shape v)
+{
+  Shape m;
+  m.points = s.points;
+  m.segments = s.segments;
+  m.faces = s.faces;
+  for(set<Vec3f>::iterator itr=v.points.begin(); itr != v.points.end(); itr++)
+    m.points.insert((*itr));
+
+  for(set<Segment>::iterator itr=v.segments.begin(); itr != v.segments.end(); itr++)
+    m.segments.insert((*itr));
+
+  for(set<Face>::iterator itr=v.faces.begin(); itr !=v.faces.end(); itr++)
+    m.faces.insert((*itr));
+
+  return m;
 }

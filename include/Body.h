@@ -77,14 +77,20 @@ class Body
 	Body& operator= (const Body& obj);
 
 	// drawing materials for now
-	void update();									// this update for now is just for drawing
+
 	void draw_body();
 	void print();
+	//  Geometry
+	void reshape();
 
 	//private:
 
 	double calculate_energy(const Mat<double>&, double&);
 	Mat<double> PSPD(const Mat<double>&);
+
+	// file handling
+	void load_from_file();
+
 
 };
 

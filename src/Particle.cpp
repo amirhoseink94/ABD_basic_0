@@ -16,7 +16,7 @@ Particle::Particle(vec p, vec vel, double mess, vec force)//: pos(p), v(vel), m(
 	m = mess;
 
 	construct_J();
-	J_T = J.t();
+
 }
 
 
@@ -39,6 +39,8 @@ void Particle::construct_J()
 	J(0,9) = pos(2);
 	J(1,10) = pos(2);
 	J(2,11) = pos(2);
+
+	J_T = J.t();
 
 }
 

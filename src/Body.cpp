@@ -28,11 +28,10 @@ void Body::init()
 void Body::set_up_dynamic()
 {
   M = Mat<double>(12,12, fill::zeros);
-
+  cout<<"we are here"<<endl;
+  cout<<points[0]->pos<<endl;
   for(long unsigned int i=0; i<points.size(); i++)
   {
-    //cout<<points[i].J_T * points[i].J<<endl<<"____"<<endl;
-
     M = M + (points[i]->m) * points[i]->J_T * points[i]->J;
   }
   cout<<M<<endl;
@@ -329,10 +328,10 @@ double Body::calculate_energy(const Mat<double>& X, double& stiff_e)
 void Body::apply_force()
 {
   Mat<double> gra(3,1, fill::zeros);
-  gra(1) = -10;
+  gra(0) = 10;
   for(unsigned long int i=0;i<points.size();i++)
     points[i]->F = points[i]->m * gra;
-  points[0]->F(0) = 10;
+  //points[0]->F(0) = 10;
 }
 
 void Body::apply_tranformation()
@@ -348,50 +347,75 @@ void Body::apply_tranformation()
 
 
 //==============================================================================
-void Body::update()
+
+void Body::load_from_file()
 {
-  /*for(long unsigned int i=0; i<points.size(); i++)
+  ifstream reader("Generator/topologycal_points.txt");
+  int N_p;
+  reader>>N_p;
+  vec Z(3, fill::zeros);
+
+  points.resize(N_p);
+
+  for(int i=0; i< N_p; i++)
   {
-    for(long unsigned int j=i+1; j<points.size(); j++)
-    {
-      if(approx_equal(points[i].pos, points[j].pos, "absdiff", 0.001)) //(points[i] == points[j])
-      {
-        points.erase(points.begin() + j);
-        j--;
-      }
-    }
+    int num;
+    double x, y, z;
+    reader>> num >> x >> y >> z;
+    vec pos(3, fill::zeros);
+    pos(0) = x;
+    pos(1) = y;
+    pos(2) = z;
+
+    double l = norm(pos, 2);
+    pos = (10./l)*pos;
+    points[i] = new Particle(pos, Z, 1, Z);
+
+    //Particle temp(pos, Z, 1, Z);
+    //points.push_back(&temp);
   }
 
-  for(long unsigned int i=0; i<segments.size(); i++)
+
+  int N_s;
+  reader>>N_s;
+  for(int i=0; i< N_s; i++)
   {
-    for(long unsigned int j=i+1; j<segments.size(); j++)
-    {
-      if(segments[i] == segments[j])
-      {
-        segments.erase(segments.begin() + j);
-        j--;
-      }
-    }
+    int x, y;
+    reader>> x >> y;
+    Segment temp(points[x], points[y]);
+    segments.push_back(temp);
   }
 
-  for(long unsigned int i=0; i<faces.size(); i++)
+  int N_f;
+  reader>>N_f;
+  for(int i=0; i< N_f; i++)
   {
-    for(long unsigned int j=i+1; j<faces.size(); j++)
-    {
-      if(faces[i] == faces[j])
-      {
-        faces.erase(faces.begin() + j);
-        j--;
-      }
-    }
-  }*/
+    int x, y, z;
+    reader>> x >> y >> z;
+    Face temp(points[x], points[y], points[y]);
+    faces.push_back(temp);
+  }
 
+  reader.close();
+}
+
+
+void Body::reshape()
+{
+
+  for(auto itr = points.begin(); itr!= points.end(); itr++)
+  {
+    double l = norm((*itr)->pos_0, 2);
+    (*itr)->pos_0 = (10./l) * (*itr)->pos_0;
+    (*itr)->pos = (*itr)->pos_0;
+    //*itr).construct_J();
+  }
 }
 
 void Body::draw_body()
 {
   glColor3ub(255, 255, 255);
-  glPointSize(5);
+  /*glPointSize(5);
   int r = 1;
   auto itr = points.begin();
   glBegin(GL_POINTS);
@@ -406,11 +430,11 @@ void Body::draw_body()
     glVertex3f((*itr)->pos[0], (*itr)->pos[1], (*itr)->pos[2]);
     glEnd();
     r+=10;
-  }
+  }*/
 
   for(long unsigned int i=0; i<segments.size(); i++)
   {
-    glColor3ub(150, 150, 150);
+    //glColor3ub(150, 150, 150);
     glBegin(GL_LINES);
     glVertex3f(this->segments[i].x->pos[0], this->segments[i].x->pos[1], this->segments[i].x->pos[2]);
     glVertex3f(this->segments[i].y->pos[0], this->segments[i].y->pos[1], this->segments[i].y->pos[2]);
