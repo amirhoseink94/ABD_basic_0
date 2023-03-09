@@ -5,30 +5,39 @@
 using namespace std;
 using namespace arma;
 
-typedef Mat<float> Vec3f;
+typedef Mat<double> Vec3f;
 
 Body Util::make_mesh(Body start, int n)
 {
-    Body res = Util::make_mesh_handler(start, 0, n);
+    static Body res = Util::make_mesh_handler(start, 0, n);
+    int x;
+    cout<<"the moment of truth"<<endl;
+    cin>>x;
+    cout<<res.segments[0];
     return res;
 }
 
-Body Util::make_mesh_handler(Body start, int itr, int n)
+Body Util::make_mesh_handler(Body& start, int itr, int n)
 {
+  cout<<"itr: "<<itr<<endl;
   if(itr == n)
   {
     return start;
   }
-
+  cout<<"we are here in the handler"<<endl;
   Vec3f Z(3,1, fill::zeros);
-  Particle A(start.points[0].pos, Z, 1, Z);
-  Particle B(start.points[1].pos, Z, 1, Z);
-  Particle C(start.points[2].pos, Z, 1, Z);
-  Particle m_AB((A.pos + B.pos)*(0.5), Z, 1, Z);
-  Particle m_BC((B.pos + C.pos)*(0.5), Z, 1, Z);
-  Particle m_CA((C.pos + A.pos)*(0.5), Z, 1, Z);
+  /*static Particle A(start.points[0].pos, Z, 1, Z);
+  static Particle B(start.points[1].pos, Z, 1, Z);
+  static Particle C(start.points[2].pos, Z, 1, Z);
+  Vec3f p1 = ((A.pos + B.pos)*(0.5));
+  Vec3f p2 = ((B.pos + C.pos)*(0.5));
+  Vec3f p3 = ((C.pos + A.pos)*(0.5));
+  static Particle m_AB(p1, Z, 1, Z);
+  static Particle m_BC(p2, Z, 1, Z);
+  static Particle m_CA(p3, Z, 1, Z);
   //cout<<C<<A<<C + A<<endl;
   Segment m_AB_A(&m_AB, &A);
+
   Segment m_AB_B(&m_AB, &B);
   Segment m_BC_B(&m_BC, &B);
   Segment m_BC_C(&m_BC, &C);
@@ -53,6 +62,11 @@ Body Util::make_mesh_handler(Body start, int itr, int n)
   up.segments.push_back(m_AB_m_CA);
 
   up.faces.push_back(m_AB_m_CA_A);
+
+  cout<<"the up body"<<endl;
+  up.print();
+  int xx;
+  cin>>xx;
   // ----------------------------
 
   Body left;
@@ -65,6 +79,11 @@ Body Util::make_mesh_handler(Body start, int itr, int n)
   left.segments.push_back(m_AB_m_CA);
 
   left.faces.push_back(m_AB_m_BC_B);
+
+  cout<<"the left body"<<endl;
+  left.print();
+
+  cin>>xx;
   // ----------------------------
 
   Body right;
@@ -77,6 +96,10 @@ Body Util::make_mesh_handler(Body start, int itr, int n)
   right.segments.push_back(m_BC_m_CA);
 
   right.faces.push_back(m_BC_m_CA_C);
+  cout<<"the right body"<<endl;
+  right.print();
+
+  cin>>xx;
   // ----------------------------
 
   Body middle;
@@ -89,84 +112,43 @@ Body Util::make_mesh_handler(Body start, int itr, int n)
   middle.segments.push_back(m_AB_m_BC);
 
   middle.faces.push_back(m_AB_m_BC_m_CA);
+  cout<<"the middle body"<<endl;
+  middle.print();
+
+  cin>>xx;
   //----
   Body res_up = make_mesh_handler(up, itr+1, n);
   Body res_middle = make_mesh_handler(middle, itr+1, n);
   Body res_right = make_mesh_handler(right, itr+1, n);
   Body res_left = make_mesh_handler(left, itr+1, n);
-  Body res = merge_shapes(merge_shapes(res_left, res_right), merge_shapes(res_up, res_middle));
+  static Body res = merge_shapes(merge_shapes(res_left, res_right), merge_shapes(res_up, res_middle));
 
 
-  return res;
+  //res.update();
+  cout<<"we made out of update!"<<endl;
+  cout<<"<><><><><><><>"<<endl;
+  res.print();
+  cout<<res.segments.size()<<"|"<<res.faces.size()<<endl;
+  cout<<res.segments[0]<<endl;
+  cout<<"<><><><><><><>DONE"<<endl;
+  int xxx;
+  cin>>xxx;*/
+  return start;
 }
 
 Body Util::merge_shapes(Body A, Body B)
 {
   Body m;
-  m.points = A.points;
-  m.segments = A.segments;
-  m.faces = A.faces;
-
+  m.points.insert(m.points.begin(), A.points.begin(), A.points.end());
+  m.segments.insert(m.segments.begin(), A.segments.begin(), A.segments.end());
+  m.faces.insert(m.faces.begin(), A.faces.begin(), A.faces.end());
+  cout<<"just this time"<<endl;
+  cout<<m.segments[0]<<endl;
   m.points.insert(m.points.end(), B.points.begin(), B.points.end());
   m.segments.insert(m.segments.end(), B.segments.begin(), B.segments.end());
   m.faces.insert(m.faces.end(), B.faces.begin(), B.faces.end());
 
   return m;
-  /*int n_points = A.points.size();
-  int n_segment = A.segments.size();
-  int n_face = A.faces.size();
-
-  for(int i=0; i<B.points.size(); i++)
-  {
-    bool check_find = true;
-    for(int j=0; j<n_points; j++)
-    {
-      if(A.points[j] == B.points[i])
-      {
-        check_find =false;
-        break;
-      }
-    }
-    if(check_find)
-    {
-        m.points.push_back(B.points[i]);
-    }
-  }
-  for(int i=0; i<B.segments.size(); i++)
-  {
-    bool check_find = true;
-    for(int j=0; j<n_segments; j++)
-    {
-      if(A.segments[j] == B.segments[i])
-      {
-        check_find =false;
-        break;
-      }
-    }
-    if(check_find)
-    {
-        m.segments.push_back(B.segments[i]);
-    }
-  }
-  for(int i=0; i<B.faces.size(); i++)
-  {
-    bool check_find = true;
-    for(int j=0; j<n_faces; j++)
-    {
-      if(A.faces[j] == B.faces[i])
-      {
-        check_find =false;
-        break;
-      }
-    }
-    if(check_find)
-    {
-        m.faces.push_back(B.faces[i]);
-    }
-  }
-
-
-  return m;*/
 }
 
 

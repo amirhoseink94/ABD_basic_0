@@ -2,25 +2,44 @@
 //#include "../include/Vector.h"
 //#include "../include/Pair.h"
 
-//typedef Vector<float> Vec3D;
+//typedef Vector<double> Vec3D;
 using namespace std;
 
-Particle::Particle(Vec3f p, Vec3f vel, float mess, Vec3f force)
+Particle::Particle(vec p, vec vel, double mess, vec force)//: pos(p), v(vel), m(mess), F(force)
 {
-	/*pos.x = p.x;
-	pos.y = p.y;
-	pos.z = p.z;
-
-	v.x = vel.x;
-	v.y = vel.y;
-	v.z = vel.z;*/
 	this->pos = p;
 	this->v = vel;
 	this->F = force;
+
+	this->pos_0 = this->pos;
+
 	m = mess;
-	/*F.x = force.x;
-	F.y = force.y;
-	F.z = force.z;*/
+
+	construct_J();
+	J_T = J.t();
+}
+
+
+void Particle::construct_J()
+{
+	J = Mat<double>(3, 12, fill::zeros);
+	J(0,0) = 1;
+	J(1,1) = 1;
+	J(2,2) = 1;
+
+
+	J(0,3) = pos(0);
+	J(1,4) = pos(0);
+	J(2,5) = pos(0);
+
+	J(0,6) = pos(1);
+	J(1,7) = pos(1);
+	J(2,8) = pos(1);
+
+	J(0,9) = pos(2);
+	J(1,10) = pos(2);
+	J(2,11) = pos(2);
+
 }
 
 ostream& operator<<(ostream& os, const Particle& obj)
@@ -32,4 +51,15 @@ ostream& operator<<(ostream& os, const Particle& obj)
 	os<<"The particle force:"<<endl<<obj.F<<endl;
 	os<<"----------------"<<endl;
 	return os;
+}
+
+bool operator< (const Particle& p1, const Particle& p2)
+{
+	if(p1.pos[0] < p2.pos[0])
+		return true;
+	if(p1.pos[0] == p2.pos[0] && p1.pos[1] < p2.pos[1])
+		return true;
+	if(p1.pos[0] == p2.pos[0] && p1.pos[1] == p2.pos[1] && p1.pos[2] < p2.pos[2])
+		return true;
+	return false;
 }

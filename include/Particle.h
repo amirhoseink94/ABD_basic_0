@@ -10,22 +10,41 @@
 
 using namespace std;
 using namespace arma;
-typedef Mat<float> Vec3f;
+
 
 class Particle
 {
 	public:
-	Vec3f pos;
-	Vec3f v;
-	float m;
-	Vec3f F;
+	vec pos_0;
+	vec v;
+	double m;
+	vec F;
+
+	vec pos;
+
+	Mat<double> J;
+	Mat<double> J_T;
 
 //	vector<Segment*> nei_segments;
 //	vector<Face*> nei_faces;
 
-	Particle(Vec3f, Vec3f, float, Vec3f); //pos - vel - mess - force
+	Particle(vec, vec, double, vec); //pos - vel - mess - force
 
+
+	Particle& operator= (const Particle& obj)
+	{
+		this->pos = obj.pos;
+		this->v = obj.v;
+		this->m = obj.m;
+		this->F = obj.F;
+
+		return *this;
+	}
 	friend ostream& operator<<(ostream& os, const Particle& obj);
+	friend bool operator< (const Particle& p1, const Particle& p2);
+
+	private:
+	void construct_J();
 };
 
 #endif

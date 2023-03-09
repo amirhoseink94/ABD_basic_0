@@ -13,7 +13,7 @@ using namespace std;
 using namespace arma;
 
 //typedef
-typedef Mat<float> Vec3f;
+
 
 class Segment
 {
@@ -30,6 +30,16 @@ class Segment
   bool operator==(const Segment& rhs) const;
   void print();
   friend ostream& operator<<(ostream& os, const Segment& obj);
+
+  Segment& operator= (const Segment& obj)
+	{
+		this->x = obj.x;
+		this->y = obj.y;
+		//this->m = obj.m;
+		//this->F = obj.F;
+
+    return *this;
+	}
 
 };
 

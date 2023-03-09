@@ -11,7 +11,7 @@ class Util
 	static Body merge_shapes(Body, Body);
 
 	private:
-	static Body make_mesh_handler(Body, int, int);
+	static Body make_mesh_handler(Body&, int, int);
 
 };
 
