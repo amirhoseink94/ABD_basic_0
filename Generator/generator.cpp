@@ -93,14 +93,27 @@ int main()
 		return -1;
 	cout << "(the glfw just initilized!)" << endl;
 
-	Vec3f A(100, 0 , 0);
-	Vec3f B(0, 100 , 0);
-	Vec3f C(0, 0 , 100);
-	Vec3f D(-100, 0, 0);
-	Vec3f E(0, -100 , 0);
-	Vec3f F(0, 0 , -100);
+	Vec3f A(-20, 0 , -20);
+	Vec3f B(20, 0 , 20); //
+	Vec3f C(-20, 0 , 20); //
+	Vec3f D(20, 0, -20);
+	Vec3f E(20, 0, 20); //
+	Vec3f F(-20, 0, 20); //
+
 
 	Shape ABC = make_triangle(A, B, C);
+	Shape ABD = make_triangle(A, B, D);
+	Shape ABC_m = make_mesh(ABC, 4);
+	Shape ABD_m = make_mesh(ABD, 4);
+	Shape s = merge_shapes(ABC_m, ABD_m);
+
+	/*Vec3f A(0, 10 , 0);
+	Vec3f B(-10, 0 , -10); //
+	Vec3f C(10, 0 , -10); //
+	Vec3f D(0, -10, 0);
+	Vec3f E(10, 0, 10); //
+	Vec3f F(-10, 0, 10); //
+	hape ABC = make_triangle(A, B, C);
 	Shape BCD = make_triangle(B, C, D);
 	Shape ABF = make_triangle(A, B, F);
 	Shape BDF = make_triangle(B, D, F);
@@ -113,21 +126,21 @@ int main()
 
 
 
-	Shape ABC_m = make_mesh(ABC, 5);
-	Shape BCD_m = make_mesh(BCD, 5);
-	Shape ABF_m = make_mesh(ABF, 5);
-	Shape BDF_m = make_mesh(BDF, 5);
+	Shape ABC_m = make_mesh(ABC, 2);
+	Shape BCD_m = make_mesh(BCD, 2);
+	Shape ABF_m = make_mesh(ABF, 2);
+	Shape BDF_m = make_mesh(BDF, 2);
 
-	Shape AEC_m = make_mesh(AEC, 5);
-	Shape ECD_m = make_mesh(ECD, 5);
-	Shape AEF_m = make_mesh(AEF, 5);
-	Shape EDF_m = make_mesh(EDF, 5);
+	Shape AEC_m = make_mesh(AEC, 2);
+	Shape ECD_m = make_mesh(ECD, 2);
+	Shape AEF_m = make_mesh(AEF, 2);
+	Shape EDF_m = make_mesh(EDF, 2);
 
 	Shape up = merge_shapes(merge_shapes(ABC_m, BCD_m), merge_shapes(ABF_m, BDF_m));
 	Shape down = merge_shapes(merge_shapes(AEC_m, ECD_m), merge_shapes(AEF_m, EDF_m));
 
-	Shape s = merge_shapes(up, down);
-	s.write_to_file();
+	Shape s = merge_shapes(up, down);*/
+	//s.write_to_file();
 
 	cout<<"we are good to go"<<endl;
 
@@ -161,7 +174,8 @@ int main()
 		{
 
 			cout<<"Z is pressed"<<endl;
-
+			s.write_to_file();
+			cout<<"The file is ready!"<<endl;
 		}
 
 		glfwSwapBuffers(window);

@@ -29,7 +29,7 @@ void Shape::draw_shape()
 
 void Shape::write_to_file()
 {
-  ofstream writer("topologycal_points.txt");
+  ofstream writer("topologycal_points_plane_medium.txt");
   int N = points.size();
 
   writer<<N<<endl;

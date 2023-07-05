@@ -2,33 +2,42 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <GL/glut.h>
+
 // armadillo library
 #include <armadillo>
+
 // system and c++ libraries
 #include <stdio.h>
 #include <iostream>
 #include <cmath>
 #include <time.h>
 #include <vector>
+
 // my libraries
 #include "include/Particle.h"
 #include "include/Segment.h"
 #include "include/Face.h"
-
+#include "include/Engin.h"
 #include "include/Body.h"
-//#include "include/Vector.h"
-//#include "include/Pair.h"
-//#include "include/Shape.h"
-#include "include/Utilities.h"
+//#include "CCD/rational/ccd.hpp"
+//#include "CCD/interval_root_finder.hpp"
+
+#include <libavcodec/avcodec.h>
+#include <libavutil/imgutils.h>
+
+#include <opencv2/opencv.hpp>
+
 //namespaces
 using namespace std;
 using namespace arma;
+using namespace ABD;
+using namespace cv;
 
-// -----------------------------------------------------------------------------------
+
 
 // --------------------------------- global variables --------------------------------
 
-int width = 500, height = 500;   // Size of the drawing area, to be set in reshape().
+int widthp = 500, height = 500;   // Size of the drawing area, to be set in reshape().
 int frameNumber = 0;     // For use in animation.
 int rotate = 0;
 
@@ -70,10 +79,11 @@ bool a_key_flag = false;
 bool d_key_flag = false;
 bool z_key_flag = false;
 
+// functions for key handling
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void key_handler();
 
-
+// -----------------------------------------------------------------------------------
 
 // rednders and drawing
 void render();
@@ -86,99 +96,81 @@ void draw_particles(vector<Particle>);
 double distance(vec, vec);
 double vec_length(const vec&);
 
-//Shape make_mesh(Shape start, int itr, int n);
-
-
+// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------
 int main( int argc, char** argv)
 {
 
-	vector<Particle> particles;
-	//cout.precision(5);
-	//cout<<fixed;
+	Engin en2;
+	en2.init();
+	vec z(3, fill::zeros);
+	vec pos(3, fill::zeros);
+	pos[0] = 0;
+	pos[1] = 0;
+	pos[2] = 0;
+	vec pos1(3, fill::zeros);
+	pos1[0] = 2;
+	pos1[1] = 0;
+	pos1[2] = 0;
+	vec pos2(3, fill::zeros);
+	pos2[0] = 2.5;
+	pos2[1] = 1;
+	pos2[2] = 0;
+	vec pos3(3, fill::zeros);
+	pos3[0] = 3;
+	pos3[1] = 1;
+	pos3[2] = 0;
 
-	/*for(int i=0 ;i <2; i++)
+
+	/*Face f(&A, &B, &C);
+
+	double pd = 0; // = eng.distance_VF(p, f, t1, t2)
+
+	while(p.pos[2]>=0)
 	{
-		vec pos(3,1)
-		Particle p(Vec3(rand()%200, rand()%200, rand()%200), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
-		particles.push_back(p);
+		pd = eng.distance_VF(p, f, t1, t2);
+		cout<<"the distance is: \n"<<eng.distance_VF(p, f, t1, t2)<<"|"<<endl;
+		if(pd!=0)
+		{
+			cout<<"we have somethign new!"<<endl;
+			 int xtyy;
+			 cin>>xtyy;
+		}
+		p.pos[2] = p.pos[2] - 0.01;
 	}*/
-	vec Z(3,1,fill::zeros);
-	vec pos1(3,fill::zeros);
-	vec pos2(3,fill::zeros);
-	vec pos3(3,fill::zeros);
-	vec pos4(3,fill::zeros);
-	pos1[0] = 10;
-	pos1[1] = 100;
-	pos1[2] = 1;
 
-	pos2[0] = 1;
-	pos2[1] = 110;
-	pos2[2] = 1;
 
-	pos3[0] = 1;
-	pos3[1] = 100;
-	pos3[2] = 10;
 
-	pos4[0] = 10;
-	pos4[1] = 110;
-	pos4[2] = 10;
-	Particle A(pos1, Z, 1, Z );
-	Particle B(pos2, Z, 2, Z );
-	Particle C(pos3, Z, 3, Z );
-	Particle D(pos4, Z, 4, Z );
-	//Particle p4(Vec3D(0, 10, 10), Vec3D(0, 0, 0), 100, Vec3D(0, 0, 0) );
-	Body b;
-	b.load_from_file();
-	//b.reshape();
-	/*b.points.push_back(&A);
-	b.points.push_back(&B);
-	b.points.push_back(&C);
-	b.points.push_back(&D);
-	Segment AB(&A, &B);
-	Segment BC(&B, &C);
-	Segment CA(&C, &A);
-	Segment AD(&A, &D);
-	Segment BD(&B, &D);
-	Segment CD(&C, &D);
-	b.segments.push_back(AB);
-	b.segments.push_back(BC);
-	b.segments.push_back(CA);
-	b.segments.push_back(AD);
-	b.segments.push_back(BD);
-	b.segments.push_back(CD);*/
-	//Face ABC(&A, &B, &C);
-	//Face ABD(&A, &B, &D);
-	//Face BCD(&B, &C, &D);
-	//Face CAD(&C, &A, &D);
 
-	//b.faces.push_back(ABC);
-	//b.faces.push_back(ABD);
-	//b.faces.push_back(BCD);
-	//b.faces.push_back(CAD);
+	//vec pos2(3, fill::zeros);
+	Engin eng;
 
-	b.init();
+	//vec pos(3, fill::zeros);
+	pos[0] = 12;
+	pos[1] = 20;
+	pos[2] = 12;
+	Body b(true, ABD::SPHERE, pos);
+	Body c(false, ABD::PLANE_CURVED, z);
 
-	//b.update_q_mad();
-	//cout<<b.q<<endl;
-	//b.calculate_energy(b.q);
-	//b.E_der_der(b.q);
-	//int x;
-	//cin>>x;
-	//b.apply_force();
-	//b.update_q_mad();
-	//b.calculate_energy(b.q);
-	//b.E_der_der(b.q);
-	//cin>>x;
-	//cout<<"q_mad is updated!"<<b.q_mad<<endl;
-	//b.update_q_mad();
-	//cout<<"q_mad is updated!"<<b.q_mad<<endl;
+	cout<<"two objects are made"<<endl;
+	//vec z(3, fill::zeros);
+	vec dQ_P, dQ_F;
+	mat ddQ_P, ddQ_F;
+	Particle P(pos, z, 1, z);
 
-	//b.calculate_next_q();
 
+	eng.add_object(&b);
+	eng.add_object(&c);
+
+	eng.init();
+
+	int xty;
+	cin>>xty;
 	if ( !glfwInit() )
 		return -1;
 	cout << "(the glfw just initilized!)" << endl;
-	GLFWwindow* window = glfwCreateWindow(width, height, "test", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(widthp, height, "test", NULL, NULL);
 	if( !window )
 	{
 		glfwTerminate();
@@ -197,6 +189,19 @@ int main( int argc, char** argv)
 
 	//render();
 	int pp = 0;
+	vec Q_dot;
+
+	VideoWriter outputVideo;
+	outputVideo.open( "video.avi",  /*Video Name*/
+			cv::VideoWriter::fourcc('M','J','P','G'), /* fourcc */
+			12.0f,                      /*Yuchen: Frame Rate */
+			cv::Size( widthp, height ),  /*Yuchen: Frame Size of the Video  */
+			true);
+
+
+	int frame_counter = 0;
+	string frame_address = "image/image_frame_";
+	bool action = false;
 	while( !glfwWindowShouldClose( window) )
 	{
 		glfwPollEvents();
@@ -205,36 +210,66 @@ int main( int argc, char** argv)
 		draw_space();
 		//draw_cube();
 		b.draw_body();
+		c.draw_body();
 
 
 		if(z_key_flag)
 		{
+			action = true;
+		}
+		if(action)
+		{
+			cout<<"we start!"<<endl;
+
 			b.apply_force();
-			Mat<double> q_next = b.calculate_next_q();
-
+			//Mat<double> q_next = b.calculate_next_q();
+			vec Q_next = eng.calculate_next_Q();
 			//cout<<"q_next:\n"<<q_next<<"\n q_mad:\n"<<b.q_mad<<endl;
+			//b.q_dot = (q_next - b.q)/b.Dl_t;
 
-			b.q_dot = (q_next - b.q)/b.Dl_t;
-			cout<<"speed:\n"<<b.q_dot<<endl;
-			//cout<<"q_mad:\n"<<b.q_mad<<"\n the next:\n"<<q_next<<endl;
+			Q_dot = (Q_next - eng.Q)/eng.Dl_t;
+			cout<<"Q_dot is: "<<endl<<Q_dot<<endl;
+			int i=0;
+			for(auto itr = eng.dynamic_objects.begin(); itr!=eng.dynamic_objects.end(); itr++)
+	    {
+	      (*itr)->q_dot = Q_dot.subvec(i, i+11);
+				i+=12;
+	    }
 
-			b.q = q_next;
-
-			b.update_A_p();
+			eng.Q = Q_next;
+			//b.q = q_next;
+			//b.update_A_p();
 			//cout<<"A:\n"<<b.A<<"{}\n"<<b.p<<endl;
-			b.apply_tranformation();
+
+			eng.apply_tranformation();
 			cout<<pp<<"[]"<<endl;
 			pp++;
 			cout<<"======\n"<<endl;
 			cout<<"Z is pressed"<<endl;
 			cout<<"complete!"<<endl;
+			cv::Mat pixels( /* num of rows */ height, /* num of cols */ widthp, CV_8UC3 );
+			glReadPixels(0, 0, widthp, height, GL_RGB, GL_UNSIGNED_BYTE, pixels.data );
+			cv::Mat cv_pixels( /* num of rows */ height, /* num of cols */ widthp, CV_8UC3 );
+			for( int y=0; y<height; y++ ) for( int x=0; x<widthp; x++ )
+			{
+				cv_pixels.at<cv::Vec3b>(y,x)[2] = pixels.at<cv::Vec3b>(height-y-1,x)[0];
+				cv_pixels.at<cv::Vec3b>(y,x)[1] = pixels.at<cv::Vec3b>(height-y-1,x)[1];
+				cv_pixels.at<cv::Vec3b>(y,x)[0] = pixels.at<cv::Vec3b>(height-y-1,x)[2];
+			}
+			string frame_num_string = to_string(frame_counter);
+			frame_num_string = string(5 - frame_num_string.length(), '0') + frame_num_string;
+			cv::imwrite(frame_address+frame_num_string+".jpg", cv_pixels);
+			frame_counter++;
+			outputVideo << cv_pixels;
 		}
+		// recording
+
 		//render_particles(particles);
 		//draw_particles(particles);
 		//render_particles(particles);
 		glfwSwapBuffers(window);
 	}
-
+	outputVideo.release();
 	glfwTerminate();
 
 	return 0;

@@ -5,11 +5,12 @@
 #include <armadillo>
 #include <iostream>
 
-//#include "Face.h"
+//#include "Body.h"
 //#include "Segment.h"
 
 using namespace std;
 using namespace arma;
+//using namespace ABD;
 
 
 class Particle
@@ -18,7 +19,15 @@ class Particle
 	vec pos_0;
 	vec v;
 	double m;
+	vector<vec> F_list;
+	double fr_value;
+	/*
+		F[0] = graviti --fixed
+		F[1] = friction
+		F[2] = any outside force --so far we dont have any
+	*/
 	vec F;
+	//Body* b;
 
 	vec pos;
 

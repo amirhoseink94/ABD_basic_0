@@ -24,8 +24,26 @@ class Face
   Particle* y;
   Particle* z;
 
-	vector<Face*> nei_segments;
+  vec n;
+  vec n_AB;
+  vec n_BC;
+  vec n_CA;
+
+
+  double R;
+  vec C_0;
+  vec C;
+  mat J_C;
+
+
+  double r;
+  vec c_0;
+  vec c;
+  mat J_c;
+
   Face(Particle* x, Particle* y, Particle* z);
+  void Cal_centre();
+  vector<Face*> nei_segments;
   friend ostream& operator<<(ostream& os, const Face& obj);
   bool operator==(const Face& s2) const;
 

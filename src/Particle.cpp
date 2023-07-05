@@ -9,13 +9,23 @@ Particle::Particle(vec p, vec vel, double mess, vec force)//: pos(p), v(vel), m(
 {
 	this->pos = p;
 	this->v = vel;
-	this->F = force;
+
+	this->F_list.resize(3);
+	F_list[2] = vec(3, fill::zeros);
+	F_list[2] = force;
+	F_list[1] = vec(3, fill::zeros);
+	vec gra(3, fill::zeros);
+	gra(1) = -10 * mess;
+	F_list[0] = vec(3, fill::zeros);
+	F_list[0] = gra;
+	fr_value = 0;
 
 	this->pos_0 = this->pos;
 
 	m = mess;
 
 	construct_J();
+
 
 }
 

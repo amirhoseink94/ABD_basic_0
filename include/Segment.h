@@ -20,6 +20,9 @@ class Segment
   public:
   Particle* x;
   Particle* y;
+
+
+
 	vector<Particle*> nei_particles;
 	vector<Face*> nei_faces;
   Segment(Particle* x, Particle* y)
